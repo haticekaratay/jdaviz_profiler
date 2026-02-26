@@ -258,10 +258,15 @@ class Profiler:
         try:
             username_field = self.driver.find_element(By.NAME, "username")
             password_field = self.driver.find_element(By.NAME, "password")
-            login_button = self.driver.find_element(By.ID, "login_submit")
         except NoSuchElementException:
             logger.info("No login required.")
             return
+        try:
+            login_button = WebDriverWait(self.driver, 10).until(
+                EC.element_to_be_clickable((By.ID, "login_submit"))
+            )
+        except TimeoutException:
+            raise Exception("Login button not clickable within the specified time.")
 
         if self.context.username is None or self.context.password is None:
             raise Exception(
