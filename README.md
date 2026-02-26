@@ -9,6 +9,7 @@ It enables users to systematically test and benchmark jdaviz’s Imviz plugin un
 ### Notebook Generation:
 
 Automatically creates Jupyter notebooks from a template (`template.ipynb`) and a parameter configuration file (`params.json`).
+Link to the [Jdaviz Profiler Usecases repository](https://github.com/spacetelescope/jdaviz_profiler_usecases), which contains example usecases with their respective `template.ipynb` and `params.json` files.
 
 All possible combinations of parameters are generated, allowing for comprehensive profiling.
 
@@ -20,9 +21,9 @@ The `template.ipynb` must have a cell with placeholders for the parameters to be
 
 Each parameter in the params.json file must have a corresponding placeholder in the template.ipynb file, and the placeholders must be unique having `_value` as suffix, e.g. `image_pixel_side_value` or `viewport_pixel_size_value` correspond to `image_pixel_side` or `viewport_pixel_size` parameter value used in the `template.ipynb`.
 
-The generated parameterized notebooks will be saved in the `usecases/<usecase path>/notebooks` directory.
+The generated parameterized notebooks will be saved in the `<usecase path>/notebooks` directory.
 
-An example of how to structure a new `<usecase>` (along with `template.ipynb` and `params.json` files) is provided in this repository in `usecases/imviz_images`.
+An example of how to structure a new `<usecase>` (along with `template.ipynb` and `params.json` files) is provided in [Jdaviz Profiler Usecases repository](https://github.com/spacetelescope/jdaviz_profiler_usecases/tree/main/imviz_images).
 
 ### Notebook Profiling:
 
@@ -74,10 +75,9 @@ pre-commit install
     - `notebooks_generator.py`: Generates notebooks from a usecase.
     - `notebook_profiler.py`: Profiles a specific notebook.
     - `generate_and_profile.py`: Generates all possible notebooks from a usecase and profiles all of them.
-- Example usecases are provided in the `usecases/` directory.
 - Create a new usecase:
     ```bash
-    ./create_new_usecase.py --name <new usecase name>
+    ./create_new_usecase.py --dir_path <new usecase path>
     ```
 - Generate all possible notebooks from a usecase:
     ```bash
