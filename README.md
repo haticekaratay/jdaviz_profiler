@@ -3,6 +3,7 @@
 Jdaviz Profiler is a Python toolkit designed to automate the generation and profiling of Jupyter notebooks for the [jdaviz](https://github.com/spacetelescope/jdaviz) visualization suite.
 It enables users to systematically test and benchmark jdaviz’s Imviz plugin under a variety of parameter combinations, such as image size, number of images, viewport size, and more.
 
+**Note**: This profiler is designed to work with JupyterLab environments that have the necessary jdaviz extensions and configurations, such as those provided by the [AWS Science Platform Images](https://github.com/spacetelescope/science-platform-images). Local Jupyter setups may not have the required jdaviz extensions needed for the profiler to function correctly.
 
 ## Features
 
