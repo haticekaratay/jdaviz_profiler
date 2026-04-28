@@ -56,6 +56,8 @@ class ExecutableCell:
 
     # Regex to identify the cell output containing the `DONE` text output
     OUTPUT_CELL_DONE_REGEX: ClassVar[str] = r"^.*(?P<DONE>DONE).*$"
+    # Regex to identify the cell output containing the `ERROR` text output
+    OUTPUT_CELL_ERROR_REGEX: ClassVar[str] = r"(?i)^.*(?P<ERROR>ERROR).*$"
 
     def __post_init__(self):
         """Post-initialization to set the cell index in performance metrics."""
@@ -151,6 +153,11 @@ class ExecutableCell:
         progress_bar.update(round(elapsed_time(while_elapsed_time)))
         while_elapsed_time = elapsed_time()
 
+        # Check for errors early to catch failures immediately
+        if self.check_for_errors():
+            self.metrics.execution_status = CellExecutionStatus.FAILED
+            return
+
         # Check if the DONE statement has been found, if not try to find it
         if not self.done_found:
             logger.debug(f"Cell {self.index} DONE statement not found yet.")
@@ -200,6 +207,44 @@ class ExecutableCell:
             explicit_wait(0.05)
             progress_bar.update(step)
         progress_bar.close()
+
+    def check_for_errors(self) -> bool:
+        """
+        Check if the executed cell has resulted in an error.
+        Returns
+        -------
+        bool
+            True if an error is found in the cell output, False otherwise.
+        """
+        output_cells: list[WebElement] = self.cell.find_elements(
+            By.CSS_SELECTOR, self.OUTPUT_CELLS_SELECTOR
+        )
+        if not output_cells:
+            logger.debug(f"Cell {self.index} has no output cells yet.")
+            return False
+
+        for output_cell in output_cells:
+            text_output_cells: list[WebElement] = output_cell.find_elements(
+                By.CSS_SELECTOR, self.OUTPUT_CELLS_TEXT_SELECTOR
+            )
+
+            logger.debug(f"Found {len(text_output_cells)} text output cells.")
+            if not text_output_cells:
+                continue
+
+            output_txt: str = linesep.join(
+                [text_output_cell.text for text_output_cell in text_output_cells]
+            )
+
+            # Check for ERROR in output
+            match_error: re.Match | None = re.search(
+                self.OUTPUT_CELL_ERROR_REGEX, output_txt, re.MULTILINE
+            )
+            if match_error and match_error.group("ERROR"):
+                logger.warning(f"Cell {self.index} encountered an error: {output_txt}")
+                return True
+
+        return False
 
     def capture_metrics(self) -> None:
         """Capture profiling metrics for the cell execution."""
