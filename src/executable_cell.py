@@ -57,7 +57,9 @@ class ExecutableCell:
     # Regex to identify the cell output containing the `DONE` text output
     OUTPUT_CELL_DONE_REGEX: ClassVar[str] = r"^.*(?P<DONE>DONE).*$"
     # Regex to identify the cell output containing the `ERROR` text output
-    OUTPUT_CELL_ERROR_REGEX: ClassVar[str] = r"(?i)^.*(?P<ERROR>ERROR).*$"
+    OUTPUT_CELL_ERROR_REGEX: ClassVar[str] = (
+        r"(?s)^.*(?P<ERROR>Traceback \(most recent call last\)).*$"
+    )
 
     def __post_init__(self):
         """Post-initialization to set the cell index in performance metrics."""
