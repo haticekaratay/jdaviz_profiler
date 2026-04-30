@@ -15,7 +15,11 @@ from chromedriver_py import binary_path  # type: ignore[import-untyped]
 from nbformat import NO_CONVERT, NotebookNode
 from nbformat import read as nb_read
 from PIL import Image
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
+from selenium.common.exceptions import (
+    ElementClickInterceptedException,
+    NoSuchElementException,
+    TimeoutException,
+)
 from selenium.webdriver import Chrome, ChromeOptions, ChromeService
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
@@ -275,7 +279,23 @@ class Profiler:
 
         username_field.send_keys(self.context.username)
         password_field.send_keys(self.context.password)
-        login_button.click()
+
+        # Scroll the login button into view before clicking to avoid
+        # ElementClickInterceptedException caused by overlays (cookie/consent
+        # banners, headers, etc.) or by the button being off-screen in very
+        # tall viewports.
+        self.driver.execute_script(
+            "arguments[0].scrollIntoView({block: 'center', inline: 'center'});",
+            login_button,
+        )
+        try:
+            login_button.click()
+        except ElementClickInterceptedException:
+            logger.debug(
+                "Native click on login button was intercepted; "
+                "falling back to JS click."
+            )
+            self.driver.execute_script("arguments[0].click();", login_button)
 
         logger.info("Login successful.")
 

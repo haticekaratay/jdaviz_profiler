@@ -100,7 +100,11 @@ class Metrics(BaseMetrics):
                 **metrics_dict,
             )
         ]
-        # Determine if we need to write the header
+        # Determine if we need to write the header. Create the file (and
+        # parent directories) if it doesn't exist yet so callers don't have
+        # to pre-touch it.
+        csv_file_path.parent.mkdir(parents=True, exist_ok=True)
+        csv_file_path.touch(exist_ok=True)
         writeheader: bool = csv_file_path.stat().st_size <= 0
         # Write metrics to CSV file
         with csv_file_path.open("a", newline="") as f:
