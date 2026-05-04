@@ -116,7 +116,14 @@ class NotebookGenerator:
                         f"'{self.PARAMS_CELL_TAG}' cell found with "
                         "no content in the notebook."
                     )
-                cell.source = cell.source.format(**parameters_values)
+                logger.info(f"Parameters values: {parameters_values}")
+                # Use string replacement instead of format() to avoid issues with
+                # braces that aren't meant to be placeholders
+                formatted_source = cell.source
+                for key, value in parameters_values.items():
+                    placeholder = "{" + key + "}"
+                    formatted_source = formatted_source.replace(placeholder, str(value))
+                cell.source = formatted_source
 
         if not param_cell_found:
             raise ValueError(
