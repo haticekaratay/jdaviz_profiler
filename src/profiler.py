@@ -135,7 +135,7 @@ class Profiler:
     UI_NETWORK_THROTTLING_PARAM: ClassVar[str] = "ui_network_throttling"
 
     # Selector for the jdaviz app viz element
-    VIZ_ELEMENT_SELECTOR: ClassVar[str] = ".jdaviz.imviz"
+    VIZ_ELEMENT_SELECTOR: ClassVar[str] = ".jdaviz"
 
     def __post_init__(self) -> None:
         """Post-initialization to set up screenshots directory path."""
